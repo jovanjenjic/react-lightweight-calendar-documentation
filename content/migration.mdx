@@ -1,0 +1,98 @@
+---
+title: Migrating to v2
+description: Upgrade react-lightweight-calendar from 1.x to 2.0, what changed and the steps to follow.
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Migrating to v2
+
+Version 2.0 changes how the package is installed and built. The component itself
+works the same: there are no removed or renamed props, and your calendars keep
+rendering as before.
+
+## What changed
+
+| | 1.x | 2.0 |
+| --- | --- | --- |
+| React | Installed by the package, React 18 only | Peer dependency, React 18 or 19 |
+| `date-fns` | Version 2 | Version 4 |
+| Build | CommonJS only | ESM and CommonJS |
+| Installed with it | Build and test tools, about 1,500 packages | `date-fns` and `classnames` |
+| `todayLabel` prop | Not available | Translate the "Today" button |
+
+### React is a peer dependency
+
+Version 1.x listed React as a regular dependency. If your app used a different React
+version, two copies ended up in the bundle, which breaks hooks with "Invalid hook
+call". Version 2.0 uses the React your app already has, and supports React 19.
+
+### Smaller install
+
+Version 1.x accidentally installed its own build and test tools, such as `node-sass`,
+`react-scripts` and Cypress, into every app that used it. Version 2.0 installs only
+`date-fns` and `classnames`.
+
+### date-fns 4
+
+Locale objects for the `locale` prop now come from `date-fns` 4. Named imports from
+`date-fns/locale` work the same as before:
+
+```js
+import { de } from 'date-fns/locale';
+```
+
+Default imports from a single locale file were removed in `date-fns` 3. Change them to
+named imports:
+
+```diff
+- import de from 'date-fns/locale/de';
++ import { de } from 'date-fns/locale/de';
+```
+
+### ESM build
+
+The package now ships an ES module build next to the CommonJS one. Modern tooling
+picks it up automatically. It also fixes apps that use `"type": "module"`, such as new
+Vite projects: with 1.x, `import Calendar from 'react-lightweight-calendar'` returned
+an object there and React reported "Element type is invalid".
+
+The `package.json` now has an `exports` map. Imports of the package root and of files
+under `react-lightweight-calendar/dist/` keep working.
+
+## Upgrade steps
+
+<Steps>
+
+### Update the package
+
+```sh npm2yarn
+npm install react-lightweight-calendar@2
+```
+
+### Make sure React is installed
+
+Your app needs `react` and `react-dom` 18 or newer as its own dependencies. Almost
+every React app already has them.
+
+### Update date-fns
+
+If you import locales, update `date-fns` to version 4 and change default locale
+imports to named imports, as shown above.
+
+```sh npm2yarn
+npm install date-fns@4
+```
+
+### Check your build
+
+Remove workarounds you may have added for 1.x, such as forcing a single React version
+with `resolutions` or `overrides`, or reaching for `.default` after importing the
+component.
+
+</Steps>
+
+<Callout type="info">
+  Something not working after the upgrade? See [FAQ & troubleshooting](/faq) or
+  [open an issue](https://github.com/jovanjenjic/react-lightweight-calendar/issues).
+</Callout>

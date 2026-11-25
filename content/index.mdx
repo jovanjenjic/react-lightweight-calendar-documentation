@@ -1,0 +1,86 @@
+---
+title: Introduction
+description: React Lightweight Calendar is a customizable React calendar component with seven views for events, bookings, reservations or any entity with ISO 8601 dates.
+---
+
+import { Cards } from 'nextra/components';
+import Playground from '../components/demos/Playground';
+
+# React Lightweight Calendar
+
+A small, customizable calendar component for React. Give it an array of objects with
+ISO 8601 dates and it lays them out in a month, week, day or timeline view. It works
+for events, bookings, reservations, rentals, orders or anything else that has a date.
+
+<Playground />
+
+## Features
+
+- **Seven views**: month, week, week with hours, day, a horizontal day, and two
+  "in place" views that group items by hour. See [Views](/views).
+- **Any date field**: position items by `startTime`, by `createdAt`, or by an interval
+  like `startTime-endTime`. See [Data & positioning](/data).
+- **Interactive**: callbacks for items, cells, day names, day numbers, hours and color
+  dots. See [Interactions](/interactions).
+- **Custom rendering**: replace the default item or only its text. See
+  [Custom rendering](/custom-rendering).
+- **Any language**: day and month names come from a [date-fns](https://date-fns.org)
+  locale, with your own date formats. See [Localization](/localization).
+- **Themeable**: colors, fonts and spacing come from CSS custom properties. See
+  [Styling & theming](/customStyling).
+- **TypeScript**: written in TypeScript and ships its type definitions. See
+  [TypeScript](/types).
+- **Small footprint**: React 18 or 19 as a peer dependency, plus `date-fns` and
+  `classnames`. Ships ESM and CommonJS builds.
+
+## Quick start
+
+```sh npm2yarn
+npm install react-lightweight-calendar
+```
+
+```jsx
+import { useState } from 'react';
+import Calendar from 'react-lightweight-calendar';
+
+const events = [
+  {
+    id: '1',
+    title: 'Design review',
+    startTime: '2025-06-02T09:00:00Z',
+    endTime: '2025-06-02T10:30:00Z',
+  },
+];
+
+export default function MyCalendar() {
+  const [currentDate, setCurrentDate] = useState('2025-06-02');
+
+  return (
+    <Calendar
+      data={events}
+      currentView="WEEK_TIME"
+      currentDate={currentDate}
+      setCurrentDate={setCurrentDate}
+      activeTimeDateField="startTime-endTime"
+    />
+  );
+}
+```
+
+The styles are included: importing the component also imports its CSS.
+
+## Next steps
+
+<Cards num={2}>
+  <Cards.Card title="Installation" href="/installation" arrow />
+  <Cards.Card title="Views" href="/views" arrow />
+  <Cards.Card title="Props reference" href="/props" arrow />
+  <Cards.Card title="Examples" href="/usages" arrow />
+</Cards>
+
+## Links
+
+- npm: [react-lightweight-calendar](https://www.npmjs.com/package/react-lightweight-calendar)
+- GitHub: [jovanjenjic/react-lightweight-calendar](https://github.com/jovanjenjic/react-lightweight-calendar)
+- Example apps: [JavaScript](https://github.com/jovanjenjic/react-lightweight-calendar-example-js) and
+  [TypeScript](https://github.com/jovanjenjic/react-lightweight-calendar-example-ts), built with Vite, MUI, Formik and Yup

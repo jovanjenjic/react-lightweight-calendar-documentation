@@ -1,0 +1,176 @@
+---
+title: Props
+description: Complete reference of every react-lightweight-calendar prop, with types, defaults and the views each one applies to.
+---
+
+# Props
+
+All props are optional, but a calendar shows nothing until it has `data` and an
+`activeTimeDateField` that matches it.
+
+## Overview
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| [`data`](#data) | `Record<string, any>[]` | `[]` |
+| [`activeTimeDateField`](#activetimedatefield) | `string` | `''` |
+| [`currentView`](#currentview) | `string` | `'MONTH'` |
+| [`currentDate`](#currentdate) | `string \| Date` | today |
+| [`setCurrentDate`](#setcurrentdate) | `(date: string \| Date) => void` | none, navigation hidden |
+| [`weekStartsOn`](#weekstartson) | `number` (0–6) | `1` (Monday) |
+| [`locale`](#locale) | date-fns `Locale` | `enUS` |
+| [`todayLabel`](#todaylabel) | `string` | `'Today'` |
+| [`timeDateFormat`](#timedateformat) | `{ day?, hour?, monthYear? }` | `{ day: 'EEE', hour: 'hh a', monthYear: 'MMMM yyyy' }` |
+| [`colorDots`](#colordots) | `ColorDot[]` | none |
+| [`cellDisplayMode`](#celldisplaymode) | `CellDisplayMode` | all cells expanded |
+| [`disableHoverEffect`](#disablehovereffect) | `boolean` | `false` |
+| [`renderItem`](#renderitem) | `(item, isHovered) => JSX.Element` | default item |
+| [`renderItemText`](#renderitemtext) | `(item) => JSX.Element` | title and time |
+| [`renderHeaderItem`](#renderheaderitem) | `(item, extras) => JSX.Element` | default item |
+| [`renderHeaderItemText`](#renderheaderitemtext) | `(item) => JSX.Element` | title |
+| [`onItemClick`](#onitemclick) | `(item, event) => void` | none |
+| [`onCellClick`](#oncellclick) | `(dateInfo, event) => void` | none |
+| [`onCellHeaderClick`](#oncellheaderclick) | `(dateInfo, event) => void` | none |
+| [`onDayNumberClick`](#ondaynumberclick) | `(day: string, event) => void` | none |
+| [`onDayStringClick`](#ondaystringclick) | `(day: string \| Date, event) => void` | none |
+| [`onHourClick`](#onhourclick) | `(value: DateInfo \| number, event) => void` | none |
+| [`onColorDotClick`](#oncolordotclick) | `(dot: ColorDot, event) => void` | none |
+
+The exact TypeScript declarations are on the [TypeScript](/types) page.
+
+## Data
+
+### `data`
+
+The items to show. Each item needs a unique, truthy `id` and the date fields named by
+`activeTimeDateField`. `title`, `bgColor` and `textColor` are used by the default
+rendering; any other fields are kept and passed back to you.
+See [Data & positioning](/data).
+
+### `activeTimeDateField`
+
+The field that positions items, such as `'startTime'`, or two fields joined by `-` for
+an interval, such as `'startTime-endTime'`. Items without a value in these fields are
+not shown. Field names cannot contain `-`.
+
+## View and navigation
+
+### `currentView`
+
+One of `'MONTH'`, `'WEEK'`, `'WEEK_TIME'`, `'DAY'`, `'DAY_REVERSE'`,
+`'WEEK_IN_PLACE'` or `'DAY_IN_PLACE'`. See [Views](/views).
+
+### `currentDate`
+
+The date whose month, week or day is shown, as `'yyyy-MM-dd'` or a `Date`. Defaults to
+today. The calendar does not change it on its own.
+
+### `setCurrentDate`
+
+Called by the built-in navigation with the new date as `'yyyy-MM-dd'`. Passing it
+shows the previous, next and "Today" buttons; leaving it out hides them.
+See [Navigation](/interactions#navigation).
+
+### `weekStartsOn`
+
+The first day of the week, from `0` (Sunday) to `6` (Saturday). Applies to `MONTH`,
+`WEEK`, `WEEK_TIME` and `WEEK_IN_PLACE`.
+
+## Language and formats
+
+### `locale`
+
+A [date-fns locale](https://date-fns.org/docs/I18n) used for day and month names.
+See [Localization](/localization).
+
+### `todayLabel`
+
+The text of the "Today" button.
+
+### `timeDateFormat`
+
+[date-fns format strings](https://date-fns.org/docs/format) for the weekday names
+(`day`), hour labels (`hour`) and navigation title (`monthYear`). Keys you leave out
+keep their defaults. See [Localization](/localization#timedateformat).
+
+## Appearance
+
+### `colorDots`
+
+Dots that mark whole days, with a generated legend. Each dot is
+`{ color, text, date }` with `date` as `'yyyy-MM-dd'`. See [Color dots](/color-dots).
+
+### `cellDisplayMode`
+
+Collapses cells in `MONTH`, `WEEK`, `WEEK_IN_PLACE` and `DAY_IN_PLACE` so each shows
+only its last item. See [Collapsing cells](/cell-display-mode).
+
+```js
+{ MONTH: { state: 'CUSTOM', inactiveCells: ['2025-06-03'] } }
+```
+
+### `disableHoverEffect`
+
+Turns off hover tracking. Items then never get the `item--hovered` and
+`sub-item--hovered` classes, and `renderItem` always receives `isHovered = false`.
+
+## Custom rendering
+
+### `renderItem`
+
+Replaces the whole item. Receives the item and whether it is hovered.
+
+### `renderItemText`
+
+Replaces only the content of the default item. Ignored when `renderItem` is set.
+
+### `renderHeaderItem`
+
+Replaces items in the row above the timeline in `WEEK_TIME` and `DAY`, which holds
+items longer than 24 hours. Receives the item and
+`{ gridColumn, isFromPrevious, isFromNext }`. Custom header items do not call
+`onItemClick` on their own.
+
+### `renderHeaderItemText`
+
+Replaces only the content of those header items.
+
+See [Custom rendering](/custom-rendering) for examples.
+
+## Callbacks
+
+Every callback receives a value and the React mouse event.
+See [Interactions & callbacks](/interactions) for a live log of what each one receives.
+
+### `onItemClick`
+
+An item was clicked. Receives the item with all your fields.
+
+### `onCellClick`
+
+An empty part of a cell was clicked. Receives a
+[`DateInfo`](/interactions#the-dateinfo-object) whose `timeDate` is the cell's key.
+
+### `onCellHeaderClick`
+
+The header strip of a day column was clicked, in `WEEK_TIME`, `DAY`, `WEEK_IN_PLACE`
+and `DAY_IN_PLACE`. Receives a `DateInfo`.
+
+### `onDayNumberClick`
+
+A day number was clicked. Receives the date as `'yyyy-MM-dd'`.
+
+### `onDayStringClick`
+
+A weekday name was clicked. Receives the date as `'yyyy-MM-dd'`; in day views it
+receives `currentDate` as you passed it.
+
+### `onHourClick`
+
+An hour label was clicked. Receives the hour as a number in `WEEK_TIME` and
+`WEEK_IN_PLACE`, and a `DateInfo` with `hour` in `DAY`, `DAY_REVERSE` and
+`DAY_IN_PLACE`.
+
+### `onColorDotClick`
+
+A color dot or its legend entry was clicked. Receives the dot object.

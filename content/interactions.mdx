@@ -1,0 +1,166 @@
+---
+title: Interactions & callbacks
+description: Every callback of react-lightweight-calendar, what it receives in each view, the DateInfo object, and how to control navigation.
+---
+
+import { Callout } from 'nextra/components';
+import CallbacksDemo from '../components/demos/CallbacksDemo';
+
+# Interactions & callbacks
+
+The calendar reports clicks through callback props. Each one receives a value and the
+React mouse event. Click around below to see what each callback receives.
+
+<CallbacksDemo />
+
+## Callbacks at a glance
+
+| Callback | Fires when you click | First argument | Views |
+| --- | --- | --- | --- |
+| `onItemClick` | An item | The item | All |
+| `onCellClick` | An empty part of a cell | [`DateInfo`](#the-dateinfo-object) | All |
+| `onCellHeaderClick` | The header strip of a day column | `DateInfo` | `WEEK_TIME`, `DAY`, `WEEK_IN_PLACE`, `DAY_IN_PLACE` |
+| `onDayNumberClick` | A day number | `'yyyy-MM-dd'` string | All |
+| `onDayStringClick` | A weekday name | `'yyyy-MM-dd'` string, or `currentDate` in day views | All |
+| `onHourClick` | An hour label | Hour number or `DateInfo`, see below | `WEEK_TIME`, `DAY`, `DAY_REVERSE`, `WEEK_IN_PLACE`, `DAY_IN_PLACE` |
+| `onColorDotClick` | A color dot or a legend entry | The [color dot](/color-dots) | All |
+| `setCurrentDate` | Previous, next or "Today" | `'yyyy-MM-dd'` string | All |
+
+All callbacks are optional. Each one has the signature `(value, event) => void`.
+
+## `onItemClick`
+
+```jsx
+<Calendar
+  onItemClick={(item, event) => {
+    openEditor(item.id);
+  }}
+/>
+```
+
+`item` contains all the fields you passed in `data`, plus a few the calendar adds while
+laying items out, such as `isStart`, `length`, `startMinute` and `endMinute`. Use your
+own fields, like `id`, and ignore the rest.
+
+The click does not bubble to the cell underneath, so clicking an item never also fires
+`onCellClick`.
+
+<Callout type="info">
+  Items in the row above the timeline, which are longer than 24 hours, call
+  `onItemClick` only when they use the default rendering. If you pass
+  `renderHeaderItem`, handle clicks inside your own element.
+</Callout>
+
+## `onCellClick` and `onCellHeaderClick`
+
+Both receive a [`DateInfo`](#the-dateinfo-object) for the clicked cell. A common use is
+creating an item where the user clicked:
+
+```jsx
+<Calendar
+  onCellClick={({ timeDate }) => {
+    // 'yyyy-MM-dd' in MONTH and WEEK, 'yyyy-MM-dd HH:mm:ss' in hour-based views
+    const start = new Date(timeDate.replace(' ', 'T'));
+    createEvent(start);
+  }}
+/>
+```
+
+`onCellHeaderClick` fires for the strip at the top of a day column in the hour-based
+views. In `MONTH` and `WEEK` that area belongs to the cell, so `onCellClick` fires
+instead.
+
+## `onHourClick`
+
+The hour labels on the left of the timeline are clickable. The first argument depends
+on the view:
+
+- `WEEK_TIME` and `WEEK_IN_PLACE` pass the hour as a number from `0` to `23`.
+- `DAY`, `DAY_REVERSE` and `DAY_IN_PLACE` pass a `DateInfo` with `hour` set.
+
+```jsx
+<Calendar
+  onHourClick={(value) => {
+    const hour = typeof value === 'number' ? value : value.hour;
+    console.log('Clicked hour', hour);
+  }}
+/>
+```
+
+## `onDayNumberClick` and `onDayStringClick`
+
+Both receive the date of the clicked day. A typical pattern is to drill down from a
+month or week into that day:
+
+```jsx
+const [view, setView] = useState('MONTH');
+const [currentDate, setCurrentDate] = useState('2025-06-02');
+
+<Calendar
+  currentView={view}
+  currentDate={currentDate}
+  setCurrentDate={setCurrentDate}
+  onDayNumberClick={(day) => {
+    setCurrentDate(day);
+    setView('DAY');
+  }}
+/>;
+```
+
+In the day views the weekday name refers to the day already shown, so
+`onDayStringClick` passes `currentDate` back as you provided it.
+
+## The `DateInfo` object
+
+```ts
+interface DateInfo {
+  date: string;          // 'yyyy-MM-dd'
+  day: number;           // day of the month
+  month: number;         // 0-11
+  year: number;
+  isCurrentDay: boolean; // true for today
+  isCurrentMonth?: boolean;
+  hour?: number;         // 0-23 in hour-based views
+  timeDate: string;      // local key: 'yyyy-MM-dd' or 'yyyy-MM-dd HH:mm:ss'
+  timeDateUTC: string;   // the same moment as an ISO string
+}
+```
+
+`timeDate` is the same key that [`cellDisplayMode`](/cell-display-mode) uses, so you can
+store it directly in `inactiveCells`.
+
+<Callout type="warning">
+  In `MONTH` and `WEEK`, `timeDate` is a plain date and `timeDateUTC` is midnight
+  **UTC** of that date, not local midnight. Build local dates from `timeDate` instead.
+</Callout>
+
+## Navigation
+
+`currentDate` decides which period is shown. The navigation steps by a month in
+`MONTH`, a week in the week views and a day in the day views.
+
+- **Built-in navigation**: pass `setCurrentDate`. The calendar shows previous, next and
+  "Today" buttons and calls `setCurrentDate` with the new date as `'yyyy-MM-dd'`.
+- **Your own navigation**: leave `setCurrentDate` out. The buttons disappear and you
+  change `currentDate` from your own controls.
+
+```jsx
+import { addMonths, format, subMonths } from 'date-fns';
+
+function MyCalendar({ events }) {
+  const [date, setDate] = useState(new Date());
+
+  return (
+    <>
+      <div className="toolbar">
+        <button onClick={() => setDate((d) => subMonths(d, 1))}>Previous</button>
+        <strong>{format(date, 'MMMM yyyy')}</strong>
+        <button onClick={() => setDate((d) => addMonths(d, 1))}>Next</button>
+      </div>
+      <Calendar data={events} currentView="MONTH" currentDate={date} activeTimeDateField="startTime-endTime" />
+    </>
+  );
+}
+```
+
+`currentDate` accepts a `'yyyy-MM-dd'` string or a `Date`, and defaults to today.

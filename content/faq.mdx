@@ -1,0 +1,124 @@
+---
+title: FAQ & troubleshooting
+description: Answers to common react-lightweight-calendar questions and fixes for items not showing, wrong times, hydration errors, styling and TypeScript issues.
+---
+
+# FAQ & troubleshooting
+
+## Items do not show up
+
+Check these in order:
+
+1. **`activeTimeDateField` matches your data.** It must name fields that exist on your
+   items, such as `startTime-endTime`. Items without a value in those fields are not
+   shown.
+2. **No hyphens in field names.** The interval is split on `-`, so a field named
+   `start-time` cannot be used.
+3. **The dates parse.** `new Date(value)` must return a valid date. Use ISO 8601
+   strings like `2025-06-02T10:00:00Z`.
+4. **You are looking at the right period.** `currentDate` decides which month, week or
+   day is shown, and defaults to today.
+
+## Times are shifted by a few hours
+
+The calendar shows dates in the viewer's local time zone. `10:00Z` is 10:00 UTC, which
+is 12:00 in Central Europe in summer. Store dates with an explicit offset, or convert
+them to the zone you want before passing them in. See
+[Date formats and time zones](/data#date-formats-and-time-zones).
+
+## Hovering highlights the wrong items
+
+Hover is tracked by `id`. Give every item a unique `id`, and do not use `0`.
+
+## "Element type is invalid … but got: object"
+
+Your app has `"type": "module"` and uses version 1.x. Upgrade to 2.0, which ships an
+ES module build. See [Migrating to v2](/migration).
+
+## "Invalid hook call" or two copies of React
+
+Version 1.x installed its own React. Upgrade to 2.0, where React is a peer dependency.
+
+## Next.js: "useState only works in Client Components"
+
+Render the calendar from a file that starts with `'use client'`. See
+[Next.js](/installation#nextjs-app-router).
+
+## Next.js: hydration mismatch
+
+The calendar marks today and places items in the visitor's time zone, which the server
+cannot know. Load it with `next/dynamic` and `{ ssr: false }`. See
+[Next.js](/installation#nextjs-app-router).
+
+## The calendar has no styles
+
+The component imports its stylesheet. Your bundler has to handle CSS imports from
+`node_modules`, which Vite, Next.js, webpack and Create React App do by default. In a
+custom webpack setup, make sure `css-loader` and `style-loader` also apply to
+`node_modules`.
+
+## Tests crash or show no items in the month view
+
+The `MONTH` view uses `IntersectionObserver` to draw each week's items when the row
+becomes visible. jsdom, used by Jest and Vitest, does not implement it, so the view
+throws `IntersectionObserver is not defined`. Add a stub to your test setup that
+reports every row as visible:
+
+```js filename="test/setup.js"
+class IntersectionObserverStub {
+  constructor(callback) {
+    this.callback = callback;
+  }
+  observe(target) {
+    this.callback([{ target, isIntersecting: true }]);
+  }
+  unobserve() {}
+  disconnect() {}
+}
+
+globalThis.IntersectionObserver = IntersectionObserverStub;
+```
+
+Browser-based test runners, such as Cypress or Playwright, need nothing extra.
+
+## How do I…
+
+### …hide the navigation?
+
+Leave out `setCurrentDate`. Control `currentDate` from your own UI instead. See
+[Navigation](/interactions#navigation).
+
+### …use a 24-hour clock?
+
+Set `timeDateFormat={{ hour: 'HH:mm' }}` for the hour labels, and
+[`renderItemText`](/localization#item-times) for the times inside items.
+
+### …start the week on Sunday?
+
+Set `weekStartsOn={0}`.
+
+### …translate the calendar?
+
+Pass a date-fns `locale` and a `todayLabel`. See [Localization](/localization).
+
+### …make it dark?
+
+Override the CSS variables. See [Dark mode](/customStyling#dark-mode).
+
+### …show different content inside items?
+
+Use `renderItemText` for the content, or `renderItem` for the whole item. See
+[Custom rendering](/custom-rendering).
+
+### …create an event when a cell is clicked?
+
+Use `onCellClick` and its `timeDate`. See [the example](/usages#create-and-remove-events).
+
+### …use `cellDisplayMode` in TypeScript?
+
+See [typing `cellDisplayMode`](/types#cell-display-mode).
+
+## Still stuck?
+
+Search the [issues](https://github.com/jovanjenjic/react-lightweight-calendar/issues)
+or open a new one with a small example.

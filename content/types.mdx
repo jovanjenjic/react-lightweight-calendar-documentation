@@ -1,0 +1,184 @@
+---
+title: TypeScript
+description: TypeScript types for react-lightweight-calendar, how to get the props type, and how to type cellDisplayMode and the other enum-typed props.
+---
+
+import { Callout } from 'nextra/components';
+
+# TypeScript
+
+The package is written in TypeScript and ships its declarations, for both the ESM and
+the CommonJS build. You get autocompletion and type checking without installing
+anything else.
+
+## Getting the props type
+
+The package exports only the component. Derive the props type from it:
+
+```tsx
+import type { ComponentProps } from 'react';
+import Calendar from 'react-lightweight-calendar';
+
+type CalendarProps = ComponentProps<typeof Calendar>;
+
+type Item = NonNullable<CalendarProps['data']>[number];
+type DateInfo = Parameters<NonNullable<CalendarProps['onCellClick']>>[0];
+type ColorDot = NonNullable<CalendarProps['colorDots']>[number];
+```
+
+## Props
+
+```ts
+interface CalendarProps {
+  data?: Record<string, any>[];
+  activeTimeDateField?: string;
+  currentView?: CurrentView | string;
+  currentDate?: string | Date;
+  setCurrentDate?: (date: string | Date) => void;
+  weekStartsOn?: WeekStartsOn | number;
+  locale?: Locale; // from date-fns
+  todayLabel?: string;
+  timeDateFormat?: TimeFormat;
+  colorDots?: ColorDot[];
+  cellDisplayMode?: CellDisplayMode;
+  disableHoverEffect?: boolean;
+
+  renderItem?: (data: Record<string, any>, isHovered: boolean) => JSX.Element;
+  renderItemText?: (data: Record<string, any>) => JSX.Element;
+  renderHeaderItem?: (
+    data: Record<string, any>,
+    extras: { gridColumn: string; isFromPrevious?: boolean; isFromNext?: boolean },
+  ) => JSX.Element;
+  renderHeaderItemText?: (data: Record<string, any>) => JSX.Element;
+
+  onItemClick?: (item: Record<string, any>, event: React.MouseEvent<HTMLElement>) => void;
+  onCellClick?: (value: DateInfo, event: React.MouseEvent<HTMLElement>) => void;
+  onCellHeaderClick?: (value: DateInfo, event: React.MouseEvent<HTMLElement>) => void;
+  onDayNumberClick?: (day: string, event: React.MouseEvent<HTMLElement>) => void;
+  onDayStringClick?: (day: string | Date, event: React.MouseEvent<HTMLElement>) => void;
+  onHourClick?: (value: DateInfo | number, event: React.MouseEvent<HTMLElement>) => void;
+  onColorDotClick?: (value: ColorDot, event: React.MouseEvent<HTMLElement>) => void;
+}
+```
+
+Render functions must return an element. Wrap plain text in a fragment, `<>{text}</>`,
+and return `<></>` rather than `null` when there is nothing to show.
+
+## Supporting types
+
+```ts
+interface DateInfo {
+  isCurrentDay: boolean;
+  isCurrentMonth?: boolean;
+  date: string;        // 'yyyy-MM-dd'
+  day: number;
+  month: number;       // 0-11
+  year: number;
+  hour?: number;       // 0-23
+  timeDate: string;    // 'yyyy-MM-dd' or 'yyyy-MM-dd HH:mm:ss'
+  timeDateUTC: string; // ISO string
+}
+
+interface ColorDot {
+  color: string;
+  text: string;
+  date: string;        // 'yyyy-MM-dd'
+  [key: string]: any;
+}
+
+interface TimeFormat {
+  day?: string;
+  hour?: string;
+  monthYear?: string;
+}
+
+interface CellDisplayMode {
+  [view: string]: {
+    state: CellDisplayModeState;
+    inactiveCells: string[];
+  };
+}
+
+enum CurrentView {
+  MONTH = 'MONTH',
+  WEEK = 'WEEK',
+  WEEK_TIME = 'WEEK_TIME',
+  DAY = 'DAY',
+  DAY_REVERSE = 'DAY_REVERSE',
+  WEEK_IN_PLACE = 'WEEK_IN_PLACE',
+  DAY_IN_PLACE = 'DAY_IN_PLACE',
+}
+
+enum WeekStartsOn {
+  SUNDAY = 0,
+  MONDAY = 1,
+  TUESDAY = 2,
+  WEDNESDAY = 3,
+  THURSDAY = 4,
+  FRIDAY = 5,
+  SATURDAY = 6,
+}
+
+enum CellDisplayModeState {
+  ALL_COLLAPSED = 'ALL_COLLAPSED',
+  ALL_EXPANDED = 'ALL_EXPANDED',
+  CUSTOM = 'CUSTOM',
+}
+```
+
+## Working with the enums
+
+The enums are not exported from the package. `currentView` and `weekStartsOn` also
+accept plain strings and numbers, so use those:
+
+```tsx
+<Calendar currentView="WEEK_TIME" weekStartsOn={1} />
+```
+
+### Cell display mode
+
+`cellDisplayMode.state` accepts only the enum, so a plain `'CUSTOM'` string does not
+type-check. Derive the type and assert the value:
+
+```tsx
+import type { ComponentProps } from 'react';
+import Calendar from 'react-lightweight-calendar';
+
+type CellDisplayMode = NonNullable<ComponentProps<typeof Calendar>['cellDisplayMode']>;
+type CellState = CellDisplayMode[string]['state'];
+
+const cellDisplayMode: CellDisplayMode = {
+  MONTH: { state: 'CUSTOM' as CellState, inactiveCells: ['2025-06-03'] },
+};
+```
+
+The values are plain strings at runtime, so the assertion is safe.
+
+## Typing your items
+
+`data` accepts any objects, and callbacks give them back as `Record<string, any>`.
+Cast them back to your own type where you use them:
+
+```tsx
+type CalendarEvent = {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  room?: string;
+};
+
+<Calendar
+  data={events}
+  onItemClick={(item) => openEditor((item as CalendarEvent).id)}
+  renderItemText={(item) => {
+    const event = item as CalendarEvent;
+    return <span>{event.title} · {event.room}</span>;
+  }}
+/>;
+```
+
+<Callout type="info">
+  The items you receive also carry fields the calendar adds while laying them out,
+  such as `isStart` or `startMinute`. Read only your own fields.
+</Callout>

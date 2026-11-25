@@ -1,23 +1,56 @@
-# Nextra Docs Template 
+# React Lightweight Calendar – Documentation
 
-This is a template for creating documentation with [Nextra](https://nextra.site).
+Source of [calendar-react.com](https://calendar-react.com), the documentation for
+[react-lightweight-calendar](https://www.npmjs.com/package/react-lightweight-calendar).
 
-[**Live Demo →**](https://nextra-docs-template.vercel.app)
+Built with [Next.js](https://nextjs.org) and [Nextra](https://nextra.site). Every page
+has live demos that use the published package.
 
-[![](.github/screenshot.png)](https://nextra-docs-template.vercel.app)
+## Development
 
-## Quick Start
+Requires Node 20.9 or newer.
 
-Click the button to clone this repository and deploy it on Vercel:
+```bash
+npm install
+npm run dev
+```
 
-[![](https://vercel.com/button)](https://vercel.com/new/clone?s=https%3A%2F%2Fgithub.com%2Fshuding%2Fnextra-docs-template&showOptionalTeamCreation=false)
+Then open [http://localhost:3003](http://localhost:3003).
 
-## Local Development
+## Scripts
 
-First, run `pnpm i` to install the dependencies.
+| Script              | What it does                                                    |
+| ------------------- | --------------------------------------------------------------- |
+| `npm run dev`       | Starts the dev server on port 3003.                             |
+| `npm run build`     | Builds the static site and the search index (Pagefind).         |
+| `npm start`         | Serves the production build on port 3003.                       |
+| `npm run typecheck` | Type-checks the project.                                        |
 
-Then, run `pnpm dev` to start the development server and visit localhost:3000.
+## Structure
 
-## License
+| Path               | Contents                                                        |
+| ------------------ | --------------------------------------------------------------- |
+| `content/`         | The pages, as MDX. `_meta.js` sets the order and the navigation. |
+| `components/demos/`| The live calendar demos used in the pages.                      |
+| `app/`             | Next.js App Router: layout, catch-all page, sitemap, robots.    |
+| `public/`          | Static files: favicon, Open Graph image, manifest.              |
 
-This project is licensed under the MIT License.
+## Environment
+
+| Variable                       | Purpose                                         |
+| ------------------------------ | ----------------------------------------------- |
+| `NEXT_PUBLIC_GOOGLE_ANALYTICS` | Google Analytics ID. Analytics is off if unset. |
+
+## Notes
+
+`zod` is pinned to 4.1.x through `overrides` in `package.json`. Nextra 4.6.1 fails to
+build with zod 4.6, which rejects a layout prop it leaves out. Remove the override once
+a newer Nextra release supports it.
+
+`npm audit` reports advisories in `zod`, `katex`, `mermaid` and `minimatch`. All of
+them come from Nextra and run only at build time on this repository's own content;
+the deployed site is static HTML. They clear once Nextra updates its dependencies.
+
+`app/globals.css` undoes a global `* { margin: 0; padding: 0 }` reset that
+react-lightweight-calendar 2.0.0 ships in its stylesheet. Remove that rule once the
+package scopes the reset to the calendar.

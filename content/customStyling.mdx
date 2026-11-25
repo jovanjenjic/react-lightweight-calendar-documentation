@@ -1,0 +1,153 @@
+---
+title: Styling & theming
+description: Theme react-lightweight-calendar with CSS custom properties, build a dark mode, change fonts and target its class names.
+---
+
+import { Callout } from 'nextra/components';
+import ThemingDemo from '../components/demos/ThemingDemo';
+
+# Styling & theming
+
+The stylesheet is imported with the component, so the calendar is styled out of the
+box. Its colors, fonts and spacing come from CSS custom properties, which makes
+theming mostly a matter of setting a few variables.
+
+<ThemingDemo />
+
+## Theming with CSS variables
+
+The calendar defines its variables on `:root`. Set your own values on any element that
+wraps the calendar and they apply to that calendar only:
+
+```css
+.my-calendar {
+  --b-100: #ccfbf1; /* default item background */
+  --b-200: #0d9488; /* accent: today, current time */
+}
+```
+
+```jsx
+<div className="my-calendar">
+  <Calendar /* ... */ />
+</div>
+```
+
+To theme every calendar on the page, set them on `body` instead.
+
+### Variables
+
+| Variable | Default | Used for |
+| --- | --- | --- |
+| `--b-100` | `#bcdaff` | Background of default items |
+| `--b-200` | `#139bff` | Accent: background of today's day number, the current-time line |
+| `--gs-0` | `#FFFFFF` | Text of today's day number |
+| `--gs-50` | `#FEFEFE` | Background of the calendar grid, border of default items |
+| `--gs-100` | `#F9F9F9` | Background of the navigation buttons on hover |
+| `--gs-200` | `#CBD5E0` | Grid lines and borders |
+| `--gs-300` | `#A0AEC0` | Days outside the current month |
+| `--gs-500` | `#718096` | Weekday names, navigation arrows, the left edge of multi-day items |
+| `--gs-600` | `#58667B` | Hour labels |
+| `--gs-700` | `#3D4757` | Day numbers and item text |
+| `--gs-800` | `#2A313C` | Navigation buttons and the month title |
+| `--spacing` | `8px` | The base unit for paddings and gaps |
+| `--font-a-1` … `--font-c-3` | Inter, various sizes | Typography, as CSS `font` shorthands |
+
+### Dark mode
+
+Override the gray scale and accents for dark backgrounds, for example when your site
+adds a `dark` class. Switch to the **Dark** theme in the demo above to see this set:
+
+```css
+.dark .my-calendar {
+  --b-100: #1e3a8a;
+  --b-200: #3b82f6;
+  --gs-50: #111827;
+  --gs-100: #1f2937;
+  --gs-200: #2b3545;
+  --gs-300: #6b7280;
+  --gs-500: #9ca3af;
+  --gs-600: #9ca3af;
+  --gs-700: #d1d5db;
+  --gs-800: #f3f4f6;
+}
+```
+
+The navigation buttons are the one part with a fixed color: their background is
+`white`. Give them a background from the theme as well:
+
+```css
+.dark .my-calendar .arrow-button {
+  background-color: var(--gs-50);
+}
+.dark .my-calendar .arrow-button:hover {
+  background-color: var(--gs-100);
+}
+```
+
+Items with their own `bgColor` and `textColor` keep those colors in every theme, so
+choose colors that work on both, or leave them out.
+
+## Fonts
+
+The font variables name **Inter** but the package does not load it. Without Inter
+installed, browsers fall back to their default sans-serif font. Either load Inter, for
+example from Google Fonts or `@fontsource/inter`, or point the variables at your own
+font. The navigation buttons set `font-family: Roboto, Inter, sans-serif` directly, so
+override `.arrow-button` too:
+
+```css
+.my-calendar {
+  --font-a-1: normal normal 500 20px/28px 'Your Font', sans-serif;
+  --font-b-1: normal normal 400 16px/24px 'Your Font', sans-serif;
+  /* ...the other --font-* variables follow the same pattern */
+}
+
+.my-calendar .arrow-button {
+  font-family: 'Your Font', sans-serif;
+}
+```
+
+## Targeting class names
+
+For changes beyond the variables, target the calendar's class names. They follow BEM
+and are prefixed by view, so they rarely collide with your own.
+
+| Element | Class names |
+| --- | --- |
+| Navigation | `.calendar__navigation`, `.calendar__navigation__month-text`, `.calendar__navigation__button`, `.arrow-button` |
+| Items | `.item`, `.sub-item`, `.item--hovered`, `.sub-item--hovered` |
+| Month view | `.month-view-inside`, `.month-week-row`, `.month-cell-header` |
+| Week view | `.week-view-inside`, `.week-view-row`, `.week-view-cell-header` |
+| Week time view | `.week-time-view-inside`, `.week-time-header`, `.week-time-week` |
+| Day view | `.day-view-inside`, `.day-header`, `.day-hour-rows` |
+| Day reverse view | `.day-reverse-view-inside`, `.day-reverse-day`, `.day-reverse-items` |
+| In-place views | `.week-time-in-place-view-inside`, `.week-in-place-row`, `.day-in-place-hour-row` |
+| Color dot legend | `.calendar-color-dots-legend` |
+| Current time | `.current-minute-line` |
+
+```css
+/* Rounded, borderless items with a shadow on hover */
+.my-calendar .sub-item {
+  border: 0;
+  border-radius: 8px;
+}
+.my-calendar .sub-item--hovered {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+}
+
+/* A tinted background for the week time view */
+.my-calendar .week-time-view-inside {
+  background-color: #f8faff;
+}
+```
+
+<Callout type="info">
+  Use your browser's developer tools to find the class name of any element. Scope your
+  rules under a wrapper class, as above, so they only affect the calendars you mean.
+</Callout>
+
+## Hover effect
+
+Hovering an item adds `item--hovered` and `sub-item--hovered` to every part of it, so an
+item spanning several days lights up as a whole. Set `disableHoverEffect` to turn this
+off, for example on touch devices or when you style hover yourself.

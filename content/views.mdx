@@ -1,0 +1,82 @@
+---
+title: Views
+description: The seven views of react-lightweight-calendar, MONTH, WEEK, WEEK_TIME, DAY, DAY_REVERSE, WEEK_IN_PLACE and DAY_IN_PLACE, with live demos.
+---
+
+import ViewDemo from '../components/demos/ViewDemo';
+
+# Views
+
+Choose a view with the `currentView` prop. It defaults to `MONTH`.
+
+```jsx
+<Calendar currentView="WEEK_TIME" /* ... */ />
+```
+
+| View | Layout | Navigation step | `weekStartsOn` | `cellDisplayMode` |
+| --- | --- | --- | --- | --- |
+| [`MONTH`](#month) | Days of the month in weeks | 1 month | ✓ | ✓ |
+| [`WEEK`](#week) | One week of day cells | 1 week | ✓ | ✓ |
+| [`WEEK_TIME`](#week_time) | One week with an hour timeline | 1 week | ✓ | |
+| [`DAY`](#day) | One day with an hour timeline | 1 day | | |
+| [`DAY_REVERSE`](#day_reverse) | One day, hours as columns | 1 day | | |
+| [`WEEK_IN_PLACE`](#week_in_place) | One week, items grouped by hour | 1 week | ✓ | ✓ |
+| [`DAY_IN_PLACE`](#day_in_place) | One day, items grouped by hour | 1 day | | ✓ |
+
+Every view supports [color dots](/color-dots), the built-in navigation and
+[custom rendering](/custom-rendering) of items.
+
+## MONTH
+
+The whole month in weekly rows. Items that span several days are drawn as one bar
+across those days. Good for an overview of busy periods and important dates.
+
+To stay fast with many items, the month view draws the items of a week when that row
+scrolls into view. It uses `IntersectionObserver` for this, which every modern browser
+has; in tests, see [the FAQ](/faq#tests-crash-or-show-no-items-in-the-month-view).
+
+<ViewDemo view="MONTH" maxHeight={1000} />
+
+## WEEK
+
+One week of day cells, laid out like a single row of the month view. Good for
+planning by week without the noise of exact times.
+
+<ViewDemo view="WEEK" />
+
+## WEEK_TIME
+
+One week with a vertical timeline of hours. Items are sized by their duration, and
+overlapping items sit side by side. Items longer than 24 hours move to a row above the
+timeline, with arrows when they continue from the previous week or into the next one.
+
+<ViewDemo view="WEEK_TIME" />
+
+## DAY
+
+A single day with the same hour timeline as `WEEK_TIME`, including the row for items
+longer than 24 hours. Good for a detailed daily schedule.
+
+<ViewDemo view="DAY" />
+
+## DAY_REVERSE
+
+A single day where hours run horizontally as columns. An item that spans several days
+is drawn on each day it covers. Good for wide layouts such as resource or room
+timelines.
+
+<ViewDemo view="DAY_REVERSE" maxHeight={360} />
+
+## WEEK_IN_PLACE
+
+One week where each day has a cell per hour. Items are grouped into the hour in which
+they **start**; their duration is not drawn. Good for seeing how many things begin at
+which hour, like a heat map of activity.
+
+<ViewDemo view="WEEK_IN_PLACE" />
+
+## DAY_IN_PLACE
+
+The same grouping by start hour as `WEEK_IN_PLACE`, for a single day.
+
+<ViewDemo view="DAY_IN_PLACE" />

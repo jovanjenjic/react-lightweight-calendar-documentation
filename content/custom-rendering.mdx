@@ -1,0 +1,110 @@
+---
+title: Custom rendering
+description: Replace the default items of react-lightweight-calendar with your own components using renderItem, renderItemText, renderHeaderItem and renderHeaderItemText.
+---
+
+import { Callout } from 'nextra/components';
+import CustomRenderingDemo from '../components/demos/CustomRenderingDemo';
+
+# Custom rendering
+
+The calendar positions and sizes every item. What goes inside is up to you. There are
+two levels for regular items and two for the row of long items above the timeline.
+
+| Prop | Replaces | Arguments | Views |
+| --- | --- | --- | --- |
+| `renderItem` | The whole item | `(item, isHovered)` | All |
+| `renderItemText` | Only the content of the default item | `(item)` | All |
+| `renderHeaderItem` | A whole item in the row above the timeline | `(item, extras)` | `WEEK_TIME`, `DAY` |
+| `renderHeaderItemText` | Only the content of such an item | `(item)` | `WEEK_TIME`, `DAY` |
+
+Toggle them below to compare with the defaults.
+
+<CustomRenderingDemo />
+
+## `renderItem`
+
+Returns the element drawn for an item. The calendar still positions it, sizes it to the
+item's duration in timeline views, and handles hover and `onItemClick`.
+
+```jsx
+<Calendar
+  renderItem={(item, isHovered) => (
+    <div className={isHovered ? 'event event--hovered' : 'event'}>
+      <strong>{item.title}</strong>
+      <span>{item.room}</span>
+    </div>
+  )}
+/>
+```
+
+`isHovered` is `true` while the pointer is over any part of that item, including the
+other parts of an item that spans several days. It is always `false` when
+`disableHoverEffect` is set.
+
+Fill the space you are given, for example with `height: 100%`, so that timeline items
+keep their size.
+
+## `renderItemText`
+
+Keeps the default box, with its background, border and hover style, and replaces only
+the text inside. Use it to change the time format or to add details.
+
+```jsx
+import { format } from 'date-fns';
+
+<Calendar
+  renderItemText={(item) => (
+    <>
+      <div>{item.title}</div>
+      <div>
+        {format(new Date(item.startTime), 'HH:mm')}–{format(new Date(item.endTime), 'HH:mm')}
+      </div>
+    </>
+  )}
+/>;
+```
+
+<Callout type="info">
+  When both are set, `renderItem` wins and `renderItemText` is not used.
+</Callout>
+
+## `renderHeaderItem`
+
+In `WEEK_TIME` and `DAY`, items longer than 24 hours are drawn in a row above the
+timeline. `renderHeaderItem` replaces those items. Its second argument tells you where
+the item sits:
+
+```ts
+interface HeaderItemExtras {
+  gridColumn: string;       // the CSS grid columns the item covers, e.g. '2 / 5'
+  isFromPrevious?: boolean; // it started before the first visible day
+  isFromNext?: boolean;     // it continues after the last visible day
+}
+```
+
+```jsx
+<Calendar
+  renderHeaderItem={(item, { isFromPrevious, isFromNext }) => (
+    <button className="all-day" onClick={() => openEditor(item.id)}>
+      {isFromPrevious && '← '}
+      {item.title}
+      {isFromNext && ' →'}
+    </button>
+  )}
+/>
+```
+
+<Callout type="warning">
+  A custom header item does not call `onItemClick` on its own. Add your own click
+  handler, as in the example above.
+</Callout>
+
+## `renderHeaderItemText`
+
+Keeps the default header item, with its arrows for items continuing from or to another
+week, and replaces only its text.
+
+```jsx
+<Calendar renderHeaderItemText={(item) => <span>🗓 {item.title}</span>} />
+```

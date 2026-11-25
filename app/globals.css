@@ -1,0 +1,127 @@
+/* react-lightweight-calendar 2.0.0 ships an unlayered `* { margin: 0; padding: 0 }`
+   reset. Unlayered rules beat Nextra's layered styles, so undo it outside the demos:
+   `revert-layer` falls back to Nextra's own spacing. Remove once the package scopes it. */
+:where(body) :not(.rlc-demo, .rlc-demo *) {
+  margin: revert-layer;
+  padding: revert-layer;
+}
+
+/* Live demo container. The calendar ships a light design, so the canvas stays
+   light in both site themes; see "Styling & theming" for a dark calendar. */
+.rlc-demo {
+  margin-top: 1.25rem;
+  border: 1px solid rgb(0 0 0 / 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  color: #1f2937;
+  color-scheme: light;
+}
+html.dark .rlc-demo {
+  border-color: rgb(255 255 255 / 0.12);
+}
+.rlc-demo__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: flex-end;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+.rlc-demo__canvas {
+  padding: 1rem;
+  overflow: auto;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.rlc-demo__footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 0.875rem;
+}
+.rlc-demo__loading {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+.rlc-demo__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.rlc-demo__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.rlc-demo__segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.rlc-demo__segmented button {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  color: #374151;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+.rlc-demo__segmented button:last-child {
+  border-right: 0;
+}
+.rlc-demo__segmented button.is-active {
+  background: #1d4ed8;
+  color: #fff;
+}
+.rlc-demo__segmented button:focus-visible,
+.rlc-demo__select:focus-visible,
+.rlc-demo__toggle input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+.rlc-demo__select {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+}
+.rlc-demo__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #374151;
+}
+.rlc-demo__log ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: decimal;
+}
+.rlc-demo__log li + li {
+  margin-top: 0.25rem;
+}
+.rlc-demo__log code {
+  font-size: 0.78rem;
+  word-break: break-word;
+}
+.rlc-demo__muted {
+  color: #6b7280;
+}
+
+/* The calendar's navigation buttons have a fixed white background; theme them too. */
+.rlc-theme-dark .arrow-button,
+.rlc-theme-ocean .arrow-button {
+  background-color: var(--gs-50);
+}
+.rlc-theme-dark .arrow-button:hover,
+.rlc-theme-ocean .arrow-button:hover {
+  background-color: var(--gs-100);
+}

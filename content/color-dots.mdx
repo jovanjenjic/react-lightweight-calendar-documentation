@@ -1,0 +1,43 @@
+---
+title: Color dots
+description: Mark days in react-lightweight-calendar with colored dots, show a generated legend and react to clicks with onColorDotClick.
+---
+
+import ColorDotsDemo from '../components/demos/ColorDotsDemo';
+
+# Color dots
+
+Color dots mark whole days, for holidays, deadlines or on-call shifts, without adding
+items. The calendar draws a dot on each day and a legend below the calendar.
+
+<ColorDotsDemo />
+
+## Usage
+
+```jsx
+<Calendar
+  colorDots={[
+    { color: '#ef4444', text: 'Deadline', date: '2025-06-12' },
+    { color: '#22c55e', text: 'Public holiday', date: '2025-06-19' },
+    { color: '#f59e0b', text: 'On call', date: '2025-06-03' },
+    { color: '#f59e0b', text: 'On call', date: '2025-06-10' },
+  ]}
+  onColorDotClick={(dot, event) => console.log(dot.text, dot.date)}
+/>
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `color` | `string` | Any CSS color. |
+| `text` | `string` | The label shown in the legend. |
+| `date` | `string` | The day to mark, as `yyyy-MM-dd`. |
+
+You can add your own fields; `onColorDotClick` passes the whole object back.
+
+## Rules
+
+- **One dot per day.** If two entries share a `date`, the last one is shown.
+- **One legend entry per color.** Entries with the same `color` share a legend entry,
+  so give each meaning its own color.
+- Dots are shown in every view, next to the day number.
+- `onColorDotClick` fires for both the dot in the calendar and the entry in the legend.

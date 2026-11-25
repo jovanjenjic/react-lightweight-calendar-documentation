@@ -1,0 +1,137 @@
+---
+title: Installation
+description: Install react-lightweight-calendar with npm, yarn, pnpm or bun and render your first calendar in React, Next.js or Vite.
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Installation
+
+## Requirements
+
+- **React 18 or 19.** `react` and `react-dom` are peer dependencies, so the calendar
+  uses the React version your app already has.
+- **A bundler that handles CSS imports.** The component imports its own stylesheet.
+  Vite, Next.js, webpack and Create React App all do this out of the box.
+
+The package also depends on `date-fns` and `classnames`, which your package manager
+installs automatically.
+
+## Install the package
+
+```sh npm2yarn
+npm install react-lightweight-calendar
+```
+
+## Render your first calendar
+
+<Steps>
+
+### Prepare your data
+
+Each item needs a unique `id` and at least one date field in a format that
+`new Date()` understands, ideally ISO 8601.
+
+```js
+const events = [
+  {
+    id: '1',
+    title: 'Conference',
+    startTime: '2025-06-02T08:00:00Z',
+    endTime: '2025-06-04T17:00:00Z',
+  },
+  {
+    id: '2',
+    title: 'Lunch',
+    startTime: '2025-06-03T12:00:00Z',
+    endTime: '2025-06-03T13:00:00Z',
+    bgColor: '#bbf7d0',
+    textColor: '#14532d',
+  },
+];
+```
+
+### Render the calendar
+
+Tell the calendar which field to position items by with `activeTimeDateField`. Two
+fields joined by `-` describe an interval.
+
+```jsx
+import { useState } from 'react';
+import Calendar from 'react-lightweight-calendar';
+
+export default function EventsCalendar() {
+  const [currentDate, setCurrentDate] = useState('2025-06-02');
+
+  return (
+    <Calendar
+      data={events}
+      currentView="MONTH"
+      currentDate={currentDate}
+      setCurrentDate={setCurrentDate}
+      activeTimeDateField="startTime-endTime"
+    />
+  );
+}
+```
+
+### Navigate
+
+Passing `setCurrentDate` shows the built-in navigation: previous, next and "Today".
+Leave it out to hide the navigation and drive `currentDate` yourself.
+
+</Steps>
+
+## Module formats
+
+The package ships both builds, and your tooling picks the right one:
+
+```js
+// ES modules (Vite, Next.js, webpack, modern Node)
+import Calendar from 'react-lightweight-calendar';
+
+// CommonJS
+const Calendar = require('react-lightweight-calendar').default;
+```
+
+## Framework notes
+
+### Next.js (App Router)
+
+The calendar uses React state, so render it from a Client Component:
+
+```jsx filename="app/calendar/EventsCalendar.jsx"
+'use client';
+
+import Calendar from 'react-lightweight-calendar';
+
+export default function EventsCalendar({ events }) {
+  return <Calendar data={events} currentView="WEEK_TIME" activeTimeDateField="startTime-endTime" />;
+}
+```
+
+The calendar highlights today and places items in the visitor's time zone. A page
+rendered on the server cannot know either, so the server HTML and the browser can
+disagree and React reports a hydration mismatch. To avoid that, render the calendar
+only in the browser:
+
+```jsx filename="app/calendar/ClientCalendar.jsx"
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const Calendar = dynamic(() => import('react-lightweight-calendar'), { ssr: false });
+
+export default Calendar;
+```
+
+This documentation renders its demos the same way.
+
+### Next.js (Pages Router), Vite, Create React App
+
+No extra setup. Import the component and render it.
+
+<Callout type="info">
+  For translated day and month names you also import a locale from `date-fns`.
+  Install `date-fns` in your app to do that; see [Localization](/localization).
+</Callout>

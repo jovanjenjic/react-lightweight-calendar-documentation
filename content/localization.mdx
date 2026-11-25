@@ -1,0 +1,117 @@
+---
+title: Localization & formats
+description: Translate react-lightweight-calendar with date-fns locales, change date formats with timeDateFormat, set the first day of the week and translate the Today button.
+---
+
+import { Callout } from 'nextra/components';
+import LocalizationDemo from '../components/demos/LocalizationDemo';
+
+# Localization & formats
+
+Four props control language and formats:
+
+| Prop | Controls | Default |
+| --- | --- | --- |
+| `locale` | Day and month names | `enUS` from `date-fns` |
+| `timeDateFormat` | How weekdays, hours and the month title are formatted | `{ day: 'EEE', hour: 'hh a', monthYear: 'MMMM yyyy' }` |
+| `weekStartsOn` | The first day of the week | `1` (Monday) |
+| `todayLabel` | The text of the "Today" button | `'Today'` |
+
+<LocalizationDemo />
+
+## `locale`
+
+Pass any locale object from [`date-fns`](https://date-fns.org/docs/I18n). Install
+`date-fns` in your app to import one:
+
+```sh npm2yarn
+npm install date-fns
+```
+
+```jsx
+import { de } from 'date-fns/locale';
+
+<Calendar locale={de} todayLabel="Heute" />;
+```
+
+<Callout type="info">
+  Use the same major version of `date-fns` as the calendar, which is version 4, so
+  your app does not bundle two copies.
+</Callout>
+
+## `todayLabel`
+
+The calendar does not translate its "Today" button through the locale. Set the text
+yourself:
+
+```jsx
+<Calendar locale={fr} todayLabel="Aujourd'hui" />
+```
+
+## `timeDateFormat`
+
+An object with up to three [date-fns format
+strings](https://date-fns.org/docs/format). Keys you leave out keep their defaults.
+
+| Key | Where it appears | Default | Example output |
+| --- | --- | --- | --- |
+| `day` | Weekday names above the columns | `'EEE'` | Mon |
+| `hour` | Hour labels on the timeline | `'hh a'` | 09 AM |
+| `monthYear` | The title of the navigation | `'MMMM yyyy'` | June 2025 |
+
+Some useful tokens:
+
+| Token | Output | Token | Output |
+| --- | --- | --- | --- |
+| `EEEEE` | M | `HH:mm` | 09:00 (24-hour) |
+| `EEEEEE` | Mo | `HH` | 09 |
+| `EEE` | Mon | `h a` | 9 AM |
+| `EEEE` | Monday | `H` | 9 |
+| `LLL y` | Jun 2025 | `LLLL yyyy` | June 2025 |
+
+```jsx
+<Calendar
+  timeDateFormat={{
+    day: 'EEEEEE',        // two-letter weekday names
+    hour: 'HH:mm',        // 24-hour clock
+    monthYear: 'LLLL yyyy',
+  }}
+/>
+```
+
+For the month title in languages that inflect month names, such as Serbian or Polish,
+use the standalone tokens `LLLL` and `LLL` rather than `MMMM` and `MMM`.
+
+Full weekday names (`EEEE`) can be wider than a day column in the week views,
+especially in German or French. Prefer `EEE` or the two-letter `EEEEEE` there.
+
+## `weekStartsOn`
+
+A number from `0` (Sunday) to `6` (Saturday). It affects `MONTH`, `WEEK`, `WEEK_TIME`
+and `WEEK_IN_PLACE`. It is not taken from the locale, so to follow the locale's
+convention pass it along:
+
+```jsx
+<Calendar locale={de} weekStartsOn={de.options?.weekStartsOn ?? 1} />
+```
+
+## Item times
+
+The time shown inside default items uses a fixed short format, such as `9:00AM`. To
+show it in another format or language, render the text yourself with
+[`renderItemText`](/custom-rendering#renderitemtext):
+
+```jsx
+import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
+
+<Calendar
+  locale={de}
+  renderItemText={(item) => (
+    <>
+      <div>{item.title}</div>
+      <div>{format(new Date(item.startTime), 'p', { locale: de })}</div>
+    </>
+  )}
+/>;
+```

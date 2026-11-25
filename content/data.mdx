@@ -1,0 +1,118 @@
+---
+title: Data & positioning
+description: How react-lightweight-calendar reads your data, which fields an item needs, how activeTimeDateField works and how items are placed in each view.
+---
+
+import { Callout } from 'nextra/components';
+
+# Data & positioning
+
+## The `data` prop
+
+`data` is an array of plain objects. The calendar reads a few fields by name and keeps
+all the others, so callbacks and render functions receive every field you put on an
+item.
+
+```js
+const data = [
+  {
+    id: 'evt-1',                          // required, unique
+    title: 'Sprint planning',             // shown by the default item
+    startTime: '2025-06-02T10:00:00Z',    // any date field you like
+    endTime: '2025-06-02T11:30:00Z',
+    bgColor: '#fde68a',                   // optional background
+    textColor: '#78350f',                 // optional text color
+    room: 'Orion',                        // your own fields are kept
+  },
+];
+```
+
+| Field | Required | Used for |
+| --- | --- | --- |
+| `id` | Yes | Telling items apart. Must be unique and truthy: hover highlighting tracks items by `id`, so `0` or duplicates break it. |
+| `title` | No | The text of the default item. With [custom rendering](/custom-rendering) you can show anything instead. |
+| `bgColor` | No | Background color of the default item. Any CSS color. |
+| `textColor` | No | Text color of the default item. Any CSS color. |
+| date fields | Yes | Positioning, through `activeTimeDateField`. The names are up to you. |
+
+## Choosing the date field
+
+`activeTimeDateField` names the field, or two fields, that position items:
+
+```jsx
+activeTimeDateField="startTime"            // a single moment
+activeTimeDateField="startTime-endTime"    // an interval from startTime to endTime
+activeTimeDateField="createdAt-updatedAt"  // any pair of fields works
+```
+
+Switching this prop re-positions the same data, so one dataset can be shown by
+different dates, for example when it was created or when it is due.
+
+<Callout type="warning">
+  The two field names are split on `-`, so field names used here cannot contain a
+  hyphen. Use `startTime`, `start_time` or similar.
+</Callout>
+
+If `activeTimeDateField` is empty or names a field your items do not have, those items
+are not shown.
+
+## Date formats and time zones
+
+Dates are read with `new Date(value)`, so use ISO 8601 strings:
+
+- `2025-06-02T10:00:00Z` is an exact moment in UTC.
+- `2025-06-02T10:00:00+02:00` is an exact moment with an offset.
+- `2025-06-02T10:00:00` without an offset is read as the viewer's local time.
+
+The calendar always **displays** dates in the viewer's local time zone. An event
+stored as `09:00Z` shows at 11:00 for a viewer in UTC+2. To show times in one fixed
+zone for everyone, convert them before passing them in, for example with
+`@date-fns/tz`.
+
+## How items are placed
+
+How an item is drawn depends on the view and on whether it is an interval.
+
+### Month and week views
+
+`MONTH` and `WEEK` place an item on every day from its start to its end, as one bar.
+A single field puts the item on that one day.
+
+### Timeline views
+
+`WEEK_TIME` and `DAY` place items on an hour timeline:
+
+- The item's height follows its duration. The shortest item drawn is 15 minutes tall.
+- With a single field, or an interval of zero length, the item is 30 minutes tall.
+- Overlapping items on the same day are placed side by side.
+- An item that crosses midnight but lasts less than 24 hours is split into two parts,
+  one on each day.
+- An item **longer than 24 hours** moves to a row above the timeline that spans its
+  days. Arrows show when it continues from the previous week or into the next one.
+
+### Horizontal day view
+
+`DAY_REVERSE` runs hours from left to right. An item that spans several days is drawn
+on each of those days, from where it starts to where it ends on that day.
+
+### In-place views
+
+`WEEK_IN_PLACE` and `DAY_IN_PLACE` group items by the hour in which they **start**.
+Only the first field of an interval is used, and the duration is not drawn.
+
+## Updating data
+
+Treat `data` like any other React state: create a new array when something changes.
+
+```jsx
+const [events, setEvents] = useState(initialEvents);
+
+const addEvent = (event) => setEvents((prev) => [...prev, event]);
+const removeEvent = (id) => setEvents((prev) => prev.filter((e) => e.id !== id));
+```
+
+<Callout type="info">
+  In version 2.0 the calendar sorts the array it receives by the active date field, in
+  place. If the order of your own array matters elsewhere, pass a copy, for example
+  `data={[...events]}`.
+</Callout>

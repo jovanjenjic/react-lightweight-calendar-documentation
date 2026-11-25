@@ -1,0 +1,83 @@
+---
+title: Collapsing cells
+description: Use cellDisplayMode in react-lightweight-calendar to collapse busy cells in the month, week and in-place views, for the whole view or cell by cell.
+---
+
+import { Callout } from 'nextra/components';
+import CellDisplayModeDemo from '../components/demos/CellDisplayModeDemo';
+
+# Collapsing cells
+
+A busy day can push the rest of the month out of sight. `cellDisplayMode` collapses
+cells so that each shows only its **last** item.
+
+<CellDisplayModeDemo />
+
+## Shape
+
+`cellDisplayMode` has an entry per view. Each entry has a `state` and a list of
+`inactiveCells`:
+
+```jsx
+<Calendar
+  cellDisplayMode={{
+    MONTH: {
+      state: 'CUSTOM',
+      inactiveCells: ['2025-06-03', '2025-06-10'],
+    },
+    WEEK_IN_PLACE: {
+      state: 'ALL_COLLAPSED',
+      inactiveCells: [],
+    },
+  }}
+/>
+```
+
+| `state` | Effect |
+| --- | --- |
+| `ALL_EXPANDED` | Every cell shows all its items. This is the default. |
+| `ALL_COLLAPSED` | Every cell shows only its last item. |
+| `CUSTOM` | Cells listed in `inactiveCells` are collapsed, the others are expanded. |
+
+It applies to `MONTH`, `WEEK`, `WEEK_IN_PLACE` and `DAY_IN_PLACE`. The timeline views
+size items by time instead, so they have nothing to collapse.
+
+## Cell keys
+
+The entries of `inactiveCells` identify cells by their local date and time:
+
+| View | Key format | Example |
+| --- | --- | --- |
+| `MONTH`, `WEEK` | `yyyy-MM-dd` | `2025-06-03` |
+| `WEEK_IN_PLACE`, `DAY_IN_PLACE` | `yyyy-MM-dd HH:mm:ss` | `2025-06-03 14:00:00` |
+
+You rarely build these by hand. `onCellClick` gives you the key of the clicked cell as
+`timeDate`, so toggling a cell is short:
+
+```jsx
+const [inactiveCells, setInactiveCells] = useState([]);
+
+<Calendar
+  currentView="MONTH"
+  cellDisplayMode={{ MONTH: { state: 'CUSTOM', inactiveCells } }}
+  onCellClick={({ timeDate }) =>
+    setInactiveCells((cells) =>
+      cells.includes(timeDate)
+        ? cells.filter((cell) => cell !== timeDate)
+        : [...cells, timeDate],
+    )
+  }
+/>;
+```
+
+<Callout type="info">
+  In `MONTH`, an item that spans several days is hidden from the later days of its run
+  once one of its days is collapsed, so a collapsed day does not leave a broken bar
+  behind.
+</Callout>
+
+## TypeScript
+
+The package types `state` as an enum it does not export, so a plain `'CUSTOM'` string
+does not type-check. Derive the type from the props instead; see
+[TypeScript](/types#cell-display-mode).
