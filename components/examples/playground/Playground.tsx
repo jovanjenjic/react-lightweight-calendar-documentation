@@ -1,7 +1,6 @@
 'use client';
 
 import { addDays } from 'date-fns';
-import { Code, Pre } from 'nextra/components';
 import { useTheme } from 'nextra-theme-docs';
 import {
   useEffect,
@@ -249,14 +248,42 @@ export function Playground() {
             MyCalendar.tsx
           </span>
         </div>
-        <span className="pg-hint">Updates as you change the options</span>
+        <div className="ex-actions">
+          <span className="pg-hint">Updates as you change the options</span>
+          <CopyButton text={code} />
+        </div>
       </div>
+      {/* Nextra's code classes give the same colors as the other code blocks.
+          Its <Pre> is not imported: the package barrel resolves it to undefined
+          in client components. */}
       <div className="ex-code">
-        <Pre data-language="tsx" data-copy="">
-          <Code>{highlightTsx(code)}</Code>
-        </Pre>
+        <pre className="pg-pre" tabIndex={0}>
+          <code className="nextra-code" dir="ltr">
+            {highlightTsx(code)}
+          </code>
+        </pre>
       </div>
     </figure>
+  );
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = setTimeout(() => setCopied(false), 1500);
+    return () => clearTimeout(timeout);
+  }, [copied]);
+  return (
+    <button
+      type="button"
+      className="ex-action"
+      onClick={() =>
+        navigator.clipboard?.writeText(text).then(() => setCopied(true))
+      }
+    >
+      {copied ? 'Copied' : 'Copy'}
+    </button>
   );
 }
 

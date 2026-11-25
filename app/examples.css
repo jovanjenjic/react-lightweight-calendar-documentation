@@ -325,8 +325,26 @@ html.dark .ex-stage:not([data-fixed-theme]) {
   outline-offset: 2px;
 }
 .pg-hint {
+  align-self: center;
+  margin-right: 0.25rem;
   color: var(--ex-muted);
   font-size: 0.8rem;
+}
+/* The playground's code block, drawn like Nextra's. */
+.pg-pre {
+  margin: 0;
+  padding: 1rem 0;
+  overflow-x: auto;
+  background: #fff;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+html.dark .pg-pre {
+  background: #000;
+}
+.pg-pre:focus-visible {
+  outline: 2px solid var(--ex-accent);
+  outline-offset: -2px;
 }
 @media (max-width: 480px) {
   .pg-toggles {

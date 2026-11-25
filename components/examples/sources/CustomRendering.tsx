@@ -19,14 +19,14 @@ export default function CustomRendering() {
         views={['MONTH', 'WEEK_TIME', 'DAY']}
         currentDate={date}
         setCurrentDate={setDate}
-        // Every item outside the all-day row. The calendar still positions and
-        // sizes it; `info` says where it is drawn and how much room it has.
+        // Every item outside the all-day row. The calendar positions and sizes
+        // it, and what you return fills it; `info` says where it is drawn and
+        // how much room it has.
         renderItem={(event, isHovered, info) => {
           const roomy = info.view !== 'MONTH' && !info.isCompact;
           return (
             <div
               style={{
-                height: '100%',
                 padding: '2px 6px',
                 overflow: 'hidden',
                 borderLeft: `4px solid ${event.bgColor ?? COLORS.blue}`,
@@ -51,8 +51,8 @@ export default function CustomRendering() {
         renderHeaderItem={(event, { continuesBefore, continuesAfter }) => (
           <div
             style={{
-              width: '100%',
-              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
               padding: '0 8px',
               borderRadius: 999,
               background: event.bgColor ?? COLORS.blue,
