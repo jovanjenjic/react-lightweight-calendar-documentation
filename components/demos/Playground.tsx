@@ -2,15 +2,7 @@
 
 import { useState } from 'react';
 import Calendar from './Calendar';
-import {
-  DemoFrame,
-  SelectField,
-  Segmented,
-  Toggle,
-  VIEWS,
-  useDemoState,
-  type View,
-} from './ui';
+import { DemoFrame, SelectField, Segmented, Toggle, VIEWS, useDemoState, type View } from './ui';
 
 /** Interactive overview: switch views and the main options. */
 export default function Playground({ initialView = 'WEEK_TIME' }: { initialView?: View }) {
@@ -23,7 +15,7 @@ export default function Playground({ initialView = 'WEEK_TIME' }: { initialView?
 
   return (
     <DemoFrame
-      maxHeight={620}
+      height={600}
       toolbar={
         <>
           <Segmented label="View" value={view} options={VIEWS} onChange={setView} />

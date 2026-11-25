@@ -1,0 +1,338 @@
+/* Examples page: a live example above its source code, and the playground. */
+
+.ex {
+  --ex-border: rgb(0 0 0 / 0.1);
+  --ex-surface: #f9fafb;
+  --ex-stage: #ffffff;
+  --ex-muted: #6b7280;
+  --ex-accent: #1a73e8;
+  margin: 1.25rem 0 2rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ex-stage);
+}
+html.dark .ex {
+  --ex-border: rgb(255 255 255 / 0.12);
+  --ex-surface: #161616;
+  --ex-stage: #1f1f1f;
+  --ex-muted: #9aa0a6;
+  --ex-accent: #a8c7fa;
+}
+
+/* Preview ---------------------------------------------------------------- */
+
+.ex-stage {
+  padding: 1rem;
+  color: #1f1f1f;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+html.dark .ex-stage {
+  color: #e3e3e3;
+}
+@media (max-width: 480px) {
+  .ex-stage {
+    padding: 0.5rem;
+  }
+}
+
+/* In dark mode the examples use the calendar's dark palette, through the same
+   --rlc-* variables any app can set. Examples that pick a theme opt out. */
+html.dark .ex-stage:not([data-fixed-theme]) {
+  color-scheme: dark;
+  --rlc-primary: #a8c7fa;
+  --rlc-bg: #1f1f1f;
+  --rlc-surface: #303134;
+  --rlc-border: #3c4043;
+  --rlc-text: #e3e3e3;
+  --rlc-text-muted: #9aa0a6;
+  --rlc-event-bg: #4285f4;
+  --rlc-today-text: #062e6f;
+  --rlc-now-color: #f28b82;
+}
+
+/* Plain controls inside the examples, so the example code needs no CSS. The
+   calendar's own buttons have the rlc-btn class and keep their styles. */
+.ex-stage :where(button:not(.rlc-btn), select, input) {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--ex-border);
+  border-radius: 8px;
+  background: var(--ex-stage);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+.ex-stage :where(button:not(.rlc-btn)) {
+  cursor: pointer;
+  font-weight: 500;
+}
+.ex-stage :where(button:not(.rlc-btn):hover) {
+  background: var(--ex-surface);
+}
+.ex-stage :where(button[aria-pressed='true']) {
+  border-color: var(--ex-accent);
+  background: color-mix(in srgb, var(--ex-accent) 14%, transparent);
+}
+.ex-stage :where(button:not(.rlc-btn), select, input):focus-visible {
+  outline: 2px solid var(--ex-accent);
+  outline-offset: 1px;
+}
+.ex-stage :where(ol) {
+  padding-left: 1.5rem;
+  list-style: decimal;
+}
+
+.ex-loading {
+  display: grid;
+  place-items: center;
+  min-height: inherit;
+  color: var(--ex-muted);
+  font-size: 0.875rem;
+}
+
+/* Source -------------------------------------------------------------------- */
+
+.ex-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.5rem 0 0.25rem;
+  border-top: 1px solid var(--ex-border);
+  background: var(--ex-surface);
+}
+.ex-tabs {
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+}
+.ex-tab {
+  position: relative;
+  padding: 0.65rem 0.75rem;
+  color: var(--ex-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ex-tab[aria-selected='true'] {
+  color: inherit;
+  font-weight: 600;
+}
+.ex-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0;
+  left: 0.75rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ex-accent);
+}
+.ex-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+.ex-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  color: var(--ex-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.ex-action:hover {
+  background: rgb(127 127 127 / 0.12);
+  color: inherit;
+}
+.ex-tab:focus-visible,
+.ex-action:focus-visible,
+.ex-expand:focus-visible {
+  outline: 2px solid var(--ex-accent);
+  outline-offset: -2px;
+}
+
+.ex-code {
+  position: relative;
+  border-top: 1px solid var(--ex-border);
+}
+/* Nextra's code block, flush with the frame. */
+.ex-code pre {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  max-height: none;
+}
+.ex-code > div {
+  margin: 0 !important;
+}
+.ex-code[data-collapsed] {
+  max-height: 22rem;
+  overflow: hidden;
+}
+.ex-code[data-collapsed]::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 5rem;
+  background: linear-gradient(transparent, var(--ex-surface));
+  pointer-events: none;
+}
+.ex-expand {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  border-top: 1px solid var(--ex-border);
+  background: var(--ex-surface);
+  color: var(--ex-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ex-expand:hover {
+  text-decoration: underline;
+}
+
+/* Playground ------------------------------------------------------------------ */
+
+.pg-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.9rem 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--ex-border);
+  background: var(--ex-surface);
+}
+.pg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.pg-label {
+  color: var(--ex-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.pg-field select {
+  height: 2.1rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 8px;
+  background: var(--ex-stage);
+  font-size: 0.85rem;
+}
+.pg-segmented {
+  display: flex;
+  height: 2.1rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--ex-stage);
+}
+.pg-segmented button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 0.4rem;
+  border-left: 1px solid var(--ex-border);
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.pg-segmented button:first-child {
+  border-left: 0;
+}
+.pg-segmented button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--ex-accent) 16%, transparent);
+  font-weight: 600;
+}
+.pg-swatches {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.1rem;
+}
+.pg-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+  cursor: pointer;
+}
+.pg-swatch[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--ex-stage),
+    0 0 0 4px currentColor;
+}
+.pg-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  grid-column: span 2;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pg-toggles legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 0.15rem;
+}
+.pg-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.pg-toggle input {
+  accent-color: var(--ex-accent);
+}
+.pg-reset {
+  align-self: end;
+  justify-self: start;
+  height: 2.1rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 8px;
+  background: var(--ex-stage);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.pg-reset:hover {
+  background: rgb(127 127 127 / 0.12);
+}
+.pg-field select:focus-visible,
+.pg-segmented button:focus-visible,
+.pg-swatch:focus-visible,
+.pg-reset:focus-visible {
+  outline: 2px solid var(--ex-accent);
+  outline-offset: 2px;
+}
+.pg-hint {
+  color: var(--ex-muted);
+  font-size: 0.8rem;
+}
+@media (max-width: 480px) {
+  .pg-toggles {
+    grid-column: 1 / -1;
+  }
+  .pg-hint {
+    display: none;
+  }
+}

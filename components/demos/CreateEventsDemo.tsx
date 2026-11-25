@@ -19,7 +19,7 @@ export default function CreateEventsDemo() {
 
   return (
     <DemoFrame
-      maxHeight={520}
+      height={560}
       toolbar={
         <Segmented
           label="View"

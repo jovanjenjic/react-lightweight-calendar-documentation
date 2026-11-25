@@ -1,25 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { createSampleEvents, toDateKey, type CalendarEvent } from './sampleData';
 
 export type View =
-  | 'MONTH'
-  | 'WEEK'
-  | 'WEEK_TIME'
-  | 'DAY'
-  | 'DAY_REVERSE'
-  | 'WEEK_IN_PLACE'
-  | 'DAY_IN_PLACE';
+  'MONTH' | 'WEEK' | 'WEEK_TIME' | 'DAY' | 'DAY_REVERSE' | 'WEEK_IN_PLACE' | 'DAY_IN_PLACE';
 
 export const VIEWS: { value: View; label: string }[] = [
   { value: 'MONTH', label: 'Month' },
   { value: 'WEEK', label: 'Week' },
-  { value: 'WEEK_TIME', label: 'Week time' },
+  { value: 'WEEK_TIME', label: 'Week schedule' },
   { value: 'DAY', label: 'Day' },
-  { value: 'DAY_REVERSE', label: 'Day reverse' },
-  { value: 'WEEK_IN_PLACE', label: 'Week in place' },
-  { value: 'DAY_IN_PLACE', label: 'Day in place' },
+  { value: 'DAY_REVERSE', label: 'Day timeline' },
+  { value: 'WEEK_IN_PLACE', label: 'Week by hour' },
+  { value: 'DAY_IN_PLACE', label: 'Day by hour' },
 ];
 
 /** Sample events and a navigable current date, starting at today. */
@@ -29,66 +23,33 @@ export function useDemoState() {
   return { events, setEvents, currentDate, setCurrentDate };
 }
 
-/** Hour labels of the hour-based views, in the order they appear. */
-const HOUR_LABELS = [
-  '.week-time-week__border-bottom-hour-unit',
-  '.day-hour-rows__border-bottom-hour-unit',
-  '.week-in-place-row__hour-cell-hour-number',
-  '.day-in-place-hour-row__hour-cell-hour-number',
-].join(', ');
-
-/**
- * Hour-based views start at midnight. Scroll the demo to the morning whenever such a
- * view is rendered, so the sample events are in sight.
- */
-function useScrollToHour(hour: number | undefined) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas || hour === undefined) return;
-    let scrolledTo: Element | null = null;
-    const apply = () => {
-      const target = canvas.querySelectorAll(HOUR_LABELS)[hour];
-      if (!target || target === scrolledTo) return;
-      scrolledTo = target;
-      const offset = target.getBoundingClientRect().top - canvas.getBoundingClientRect().top;
-      canvas.scrollTop += offset - 24;
-    };
-    const observer = new MutationObserver(apply);
-    observer.observe(canvas, { childList: true, subtree: true });
-    apply();
-    return () => observer.disconnect();
-  }, [hour]);
-  return ref;
-}
-
 export function DemoFrame({
   toolbar,
   footer,
-  maxHeight,
-  scrollToHour = 7,
+  height = 560,
+  fixedTheme = false,
   className,
   style,
   children,
 }: {
   toolbar?: ReactNode;
   footer?: ReactNode;
-  maxHeight?: number;
-  /** Hour to scroll hour-based views to; only applies with `maxHeight`. */
-  scrollToHour?: number;
+  /** Height of the calendar, in px. The hour views scroll inside it. */
+  height?: number;
+  /** The demo picks its own theme: do not follow the site's dark mode. */
+  fixedTheme?: boolean;
   className?: string;
   style?: React.CSSProperties;
   children: ReactNode;
 }) {
-  const canvasRef = useScrollToHour(maxHeight ? scrollToHour : undefined);
   return (
     // Demo controls and calendar labels are not documentation; keep them out of search.
     <div className={`rlc-demo ${className ?? ''}`} style={style} data-pagefind-ignore="all">
       {toolbar && <div className="rlc-demo__toolbar">{toolbar}</div>}
       <div
-        ref={canvasRef}
         className="rlc-demo__canvas"
-        style={maxHeight ? { maxHeight } : undefined}
+        style={{ height }}
+        data-fixed-theme={fixedTheme || undefined}
       >
         {children}
       </div>

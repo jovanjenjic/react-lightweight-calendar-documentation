@@ -73,7 +73,7 @@ export function createSampleEvents(reference = new Date()): CalendarEvent[] {
     },
     {
       id: 'release',
-      title: 'Release 2.0',
+      title: 'Release 3.0',
       startTime: at(day(3), 15, 0),
       endTime: at(day(3), 16, 0),
       bgColor: '#fecaca',

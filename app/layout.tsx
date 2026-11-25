@@ -6,6 +6,7 @@ import { getPageMap } from 'nextra/page-map';
 import type { ReactNode } from 'react';
 import 'nextra-theme-docs/style.css';
 import './globals.css';
+import './examples.css';
 
 const SITE_URL = 'https://calendar-react.com';
 const DESCRIPTION =
@@ -45,10 +46,11 @@ export const metadata: Metadata = {
 const GA_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS;
 
 const banner = (
-  <Banner storageKey="rlc-v2-release">
-    Version 2.0 is out with React 19 support and an ESM build.{' '}
-    <a href="/migration" style={{ textDecoration: 'underline' }}>
-      Read the migration guide →
+  <Banner storageKey="rlc-v3-release">
+    Version 3.0 is out: a Google Calendar style layout, themes and render props for
+    every part.{' '}
+    <a href="/examples" style={{ textDecoration: 'underline' }}>
+      Try it in the playground →
     </a>
   </Banner>
 );

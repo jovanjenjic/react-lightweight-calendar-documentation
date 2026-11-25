@@ -1,13 +1,5 @@
-/* react-lightweight-calendar 2.0.0 ships an unlayered `* { margin: 0; padding: 0 }`
-   reset. Unlayered rules beat Nextra's layered styles, so undo it outside the demos:
-   `revert-layer` falls back to Nextra's own spacing. Remove once the package scopes it. */
-:where(body) :not(.rlc-demo, .rlc-demo *) {
-  margin: revert-layer;
-  padding: revert-layer;
-}
-
-/* Live demo container. The calendar ships a light design, so the canvas stays
-   light in both site themes; see "Styling & theming" for a dark calendar. */
+/* Live demos in the guides. In dark mode they follow the site, through the same
+   --rlc-* variables any app can set; demos that pick a theme opt out. */
 .rlc-demo {
   margin-top: 1.25rem;
   border: 1px solid rgb(0 0 0 / 0.1);
@@ -19,6 +11,44 @@
 }
 html.dark .rlc-demo {
   border-color: rgb(255 255 255 / 0.12);
+  background: #1f1f1f;
+  color: #e3e3e3;
+}
+html.dark .rlc-demo__toolbar,
+html.dark .rlc-demo__footer {
+  border-color: rgb(255 255 255 / 0.12);
+  background: #161616;
+}
+html.dark .rlc-demo__canvas:not([data-fixed-theme]) {
+  color-scheme: dark;
+  --rlc-primary: #a8c7fa;
+  --rlc-bg: #1f1f1f;
+  --rlc-surface: #303134;
+  --rlc-border: #3c4043;
+  --rlc-text: #e3e3e3;
+  --rlc-text-muted: #9aa0a6;
+  --rlc-event-bg: #4285f4;
+  --rlc-today-text: #062e6f;
+  --rlc-now-color: #f28b82;
+}
+html.dark .rlc-demo__segmented,
+html.dark .rlc-demo__select {
+  border-color: rgb(255 255 255 / 0.16);
+}
+html.dark .rlc-demo__segmented button,
+html.dark .rlc-demo__select {
+  border-color: rgb(255 255 255 / 0.12);
+  background: #1f1f1f;
+  color: #e3e3e3;
+}
+html.dark .rlc-demo__segmented button.is-active {
+  background: #a8c7fa;
+  color: #062e6f;
+}
+html.dark .rlc-demo__label,
+html.dark .rlc-demo__muted,
+html.dark .rlc-demo__toggle {
+  color: #9aa0a6;
 }
 .rlc-demo__toolbar {
   display: flex;
@@ -30,9 +60,15 @@ html.dark .rlc-demo {
   background: #f9fafb;
 }
 .rlc-demo__canvas {
+  box-sizing: content-box;
   padding: 1rem;
-  overflow: auto;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
 }
 .rlc-demo__footer {
   padding: 0.75rem 1rem;
@@ -114,14 +150,4 @@ html.dark .rlc-demo {
 }
 .rlc-demo__muted {
   color: #6b7280;
-}
-
-/* The calendar's navigation buttons have a fixed white background; theme them too. */
-.rlc-theme-dark .arrow-button,
-.rlc-theme-ocean .arrow-button {
-  background-color: var(--gs-50);
-}
-.rlc-theme-dark .arrow-button:hover,
-.rlc-theme-ocean .arrow-button:hover {
-  background-color: var(--gs-100);
 }

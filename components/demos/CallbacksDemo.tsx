@@ -25,9 +25,14 @@ export default function CallbacksDemo() {
 
   return (
     <DemoFrame
-      maxHeight={520}
+      height={560}
       toolbar={<Segmented label="View" value={view} options={VIEWS} onChange={setView} />}
-      footer={<EventLog entries={log} empty="Click items, cells, day names, day numbers, hours or color dots." />}
+      footer={
+        <EventLog
+          entries={log}
+          empty="Click items, cells, day names, day numbers, hours or color dots."
+        />
+      }
     >
       <Calendar
         data={events}
@@ -38,16 +43,16 @@ export default function CallbacksDemo() {
           setCurrentDate(date);
         }}
         activeTimeDateField="startTime-endTime"
-        colorDots={[
-          { color: '#ef4444', text: 'Deadline', date: String(currentDate).slice(0, 10) },
-        ]}
+        colorDots={[{ color: '#ef4444', text: 'Deadline', date: String(currentDate).slice(0, 10) }]}
         onItemClick={(item) => push(`onItemClick({ id: "${item.id}", title: "${item.title}" })`)}
         onCellClick={(value) => push(`onCellClick(${describeDateInfo(value)})`)}
         onCellHeaderClick={(value) => push(`onCellHeaderClick(${describeDateInfo(value)})`)}
         onDayNumberClick={(day) => push(`onDayNumberClick("${day}")`)}
         onDayStringClick={(day) => push(`onDayStringClick(${describeDay(day)})`)}
         onHourClick={(value) => push(`onHourClick(${describeDateInfo(value)})`)}
-        onColorDotClick={(dot) => push(`onColorDotClick({ text: "${dot.text}", date: "${dot.date}" })`)}
+        onColorDotClick={(dot) =>
+          push(`onColorDotClick({ text: "${dot.text}", date: "${dot.date}" })`)
+        }
       />
     </DemoFrame>
   );

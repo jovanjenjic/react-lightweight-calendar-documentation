@@ -35,7 +35,7 @@ To stay fast with many items, the month view draws the items of a week when that
 scrolls into view. It uses `IntersectionObserver` for this, which every modern browser
 has; in tests, see [the FAQ](/faq#tests-crash-or-show-no-items-in-the-month-view).
 
-<ViewDemo view="MONTH" maxHeight={1000} />
+<ViewDemo view="MONTH" height={640} />
 
 ## WEEK
 
@@ -65,7 +65,7 @@ A single day where hours run horizontally as columns. An item that spans several
 is drawn on each day it covers. Good for wide layouts such as resource or room
 timelines.
 
-<ViewDemo view="DAY_REVERSE" maxHeight={360} />
+<ViewDemo view="DAY_REVERSE" height={300} />
 
 ## WEEK_IN_PLACE
 

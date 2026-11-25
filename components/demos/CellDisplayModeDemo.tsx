@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import Calendar, { type CalendarProps } from './Calendar';
+import type { CellDisplayMode, CellDisplayState } from 'react-lightweight-calendar';
+import Calendar from './Calendar';
 import { DemoFrame, Segmented, useDemoState, type View } from './ui';
 
-// The package types `state` as an enum it does not export, so derive the type from the props.
-type CellDisplayMode = NonNullable<CalendarProps['cellDisplayMode']>;
-type State = CellDisplayMode[string]['state'];
-const STATES = ['ALL_EXPANDED', 'ALL_COLLAPSED', 'CUSTOM'] as State[];
+type State = CellDisplayState;
+const STATES: State[] = ['ALL_EXPANDED', 'ALL_COLLAPSED', 'CUSTOM'];
 
 /** Collapse cells for the whole view, or toggle single cells by clicking them. */
 export default function CellDisplayModeDemo() {
@@ -20,7 +19,7 @@ export default function CellDisplayModeDemo() {
 
   return (
     <DemoFrame
-      maxHeight={1000}
+      height={640}
       toolbar={
         <>
           <Segmented

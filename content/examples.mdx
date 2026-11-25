@@ -1,0 +1,183 @@
+---
+title: Examples & playground
+description: Live react-lightweight-calendar examples with their source code. A playground for the options, all seven views, creating and editing events, callbacks, loading data, custom rendering, themes, languages and a booking calendar.
+---
+
+import { Callout } from 'nextra/components';
+import { Example } from '../components/examples/Example';
+import { Playground } from '../components/examples/playground/Playground';
+
+# Examples & playground
+
+Every example on this page runs live, and the code under it is the exact file that runs.
+Copy it into your app as it is. The examples share `data.ts`, a busy week of sample
+events around today; it is in the second tab of each example.
+
+<Callout type="info">
+  The calendar fills its parent element. Give the parent a height, as every example
+  does, and the hour views scroll inside it.
+</Callout>
+
+## Playground
+
+Change the options and copy the component they add up to. Options left at their
+defaults add nothing to the code.
+
+<Playground />
+
+## Basics
+
+### Calendar with navigation
+
+`setCurrentDate` shows the navigation, `onViewChange` the view switcher, and `views`
+picks the views it offers.
+
+<Example name="BasicCalendar" />
+
+### All seven views
+
+Month, week, a week schedule, a day, a horizontal day timeline, and the week and day
+grouped by hour. Overlapping items share the width like in Google Calendar, multi-day
+items sit in their own lanes, and items crossing midnight are split across their days.
+
+<Example name="AllViews" height={620} />
+
+### Working hours and a 24-hour clock
+
+`startHour` and `endHour` limit the hours, `weekStartsOn` picks the first day of the
+week, and `timeDateFormat` sets any [date-fns format](https://date-fns.org/docs/format).
+
+<Example name="WorkingHours" height={560} />
+
+### A busy month
+
+Days with more items than `dayMaxItems` end with "+N more", which opens the list of
+the day. `'auto'` fits as many items as the cell height allows.
+
+<Example name="BusyMonth" height={650} />
+
+## Interaction
+
+### Create and edit events
+
+Click an empty slot to add an event and an event to edit it. `onCellClick` receives a
+[`DateInfo`](/types#supporting-types) with the start of the clicked cell, and `Calendar<Event>`
+types the items in every callback.
+
+<Example name="CreateAndEdit" height={610} />
+
+### Open a day from the month
+
+Day numbers and weekday names report their day; switch the view to show it.
+
+<Example name="DrillDown" />
+
+### Every callback
+
+Each callback prints what it receives. Click items, empty slots, day names, day
+numbers, hour labels, "+N more" and the red dot.
+
+<Example name="Callbacks" height={680} />
+
+### Load events for the visible range
+
+`getViewRange` returns the days the calendar shows, so you fetch only those, again
+whenever the view or the date changes.
+
+<Example name="LoadVisibleRange" height={610} />
+
+## Customization
+
+### Your own toolbar
+
+`renderNavigation` replaces the toolbar. It gets the title and the actions, so the
+calendar keeps doing the date math.
+
+<Example name="CustomToolbar" />
+
+### Custom items and headers
+
+Render props replace any part: here the items, the all-day bars, the column headers and
+the hour labels. The calendar still lays everything out. See
+[Custom rendering](/custom-rendering) for all of them.
+
+<Example name="CustomRendering" height={620} />
+
+### Themes
+
+`theme` switches between light, dark and the system setting, and `--rlc-*` CSS variables
+change colors, sizes and fonts.
+
+<Example name="Theming" height={610} fixedTheme />
+
+### Languages
+
+A [date-fns locale](https://date-fns.org/docs/I18n) translates month and weekday names,
+`labels` the texts of the calendar, and the locale knows the first day of the week.
+
+<Example name="Localization" height={610} />
+
+### Color dots
+
+`colorDots` marks days next to their number, and the legend under the calendar lists
+each color once.
+
+<Example name="ColorDots" height={650} />
+
+### Collapsing cells
+
+`cellDisplayMode` collapses cells to their last item: all of them, or the ones you list.
+Click cells to collapse them.
+
+<Example name="CollapsingCells" height={650} />
+
+## Use cases
+
+### Booking calendar
+
+Bookings are whole days, so their dates are `yyyy-MM-dd` values and they show as bars.
+`renderCellContent` adds a price to the free days.
+
+<Example name="BookingCalendar" height={650} />
+
+### Next.js App Router
+
+Fetch on the server and render the calendar in a Client Component. It shows "today"
+and places items in the visitor's time zone, so render it in the browser only.
+
+```tsx filename="app/schedule/page.tsx"
+import Schedule from './Schedule';
+
+export default async function SchedulePage() {
+  const events = await getEvents(); // your data source
+  return <Schedule events={events} />;
+}
+```
+
+```tsx filename="app/schedule/Schedule.tsx"
+'use client';
+
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
+import type { CalendarItem, CalendarView } from 'react-lightweight-calendar';
+
+const Calendar = dynamic(() => import('react-lightweight-calendar'), { ssr: false });
+
+export default function Schedule({ events }: { events: CalendarItem[] }) {
+  const [view, setView] = useState<CalendarView>('WEEK_TIME');
+  const [date, setDate] = useState<string | Date>(new Date());
+
+  return (
+    <div style={{ height: 640 }}>
+      <Calendar
+        data={events}
+        activeTimeDateField="start-end"
+        currentView={view}
+        onViewChange={setView}
+        currentDate={date}
+        setCurrentDate={setDate}
+      />
+    </div>
+  );
+}
+```

@@ -24,14 +24,16 @@ export default function ColorDotsDemo() {
 
   return (
     <DemoFrame
-      maxHeight={1000}
+      height={640}
       footer={
         selected ? (
           <>
             onColorDotClick: <strong>{selected}</strong>
           </>
         ) : (
-          <span className="rlc-demo__muted">Click a dot in the calendar or an entry in the legend.</span>
+          <span className="rlc-demo__muted">
+            Click a dot in the calendar or an entry in the legend.
+          </span>
         )
       }
     >

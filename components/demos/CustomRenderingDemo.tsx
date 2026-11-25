@@ -17,7 +17,7 @@ export default function CustomRenderingDemo() {
 
   return (
     <DemoFrame
-      maxHeight={520}
+      height={560}
       toolbar={
         <>
           <Segmented
@@ -36,7 +36,8 @@ export default function CustomRenderingDemo() {
       }
       footer={
         <span className="rlc-demo__muted">
-          renderItem replaces the whole item; renderItemText only its content. renderItem wins when both are set.
+          renderItem replaces the whole item; renderItemText only its content. renderItem wins when
+          both are set.
         </span>
       }
     >

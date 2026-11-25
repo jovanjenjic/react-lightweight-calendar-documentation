@@ -39,7 +39,7 @@ export default function LocalizationDemo() {
 
   return (
     <DemoFrame
-      maxHeight={480}
+      height={540}
       toolbar={
         <>
           <SelectField

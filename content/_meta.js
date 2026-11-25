@@ -1,6 +1,7 @@
 export default {
   index: 'Introduction',
   installation: 'Installation',
+  examples: 'Examples & playground',
   '-- guides': { type: 'separator', title: 'Guides' },
   views: 'Views',
   data: 'Data & positioning',
@@ -13,7 +14,6 @@ export default {
   '-- reference': { type: 'separator', title: 'Reference' },
   props: 'Props',
   types: 'TypeScript',
-  usages: 'Examples',
   '-- more': { type: 'separator', title: 'More' },
   migration: 'Migrating to v2',
   faq: 'FAQ & troubleshooting',
@@ -22,6 +22,11 @@ export default {
     title: 'Documentation',
     type: 'page',
     href: '/',
+  },
+  'examples-page': {
+    title: 'Examples',
+    type: 'page',
+    href: '/examples',
   },
   about: {
     title: 'About',
