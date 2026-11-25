@@ -43,6 +43,11 @@ Then open [http://localhost:3003](http://localhost:3003).
 
 ## Notes
 
+The search index is built by `scripts/build-search-index.mjs`, which runs after
+`next build`. It reads the prerendered pages from `.next/server/app`, or from
+`.next/server/route-cache` when Next.js builds with a deployment adapter as it does on
+Vercel, and passes each page's URL to Pagefind explicitly.
+
 `zod` is pinned to 4.1.x through `overrides` in `package.json`. Nextra 4.6.1 fails to
 build with zod 4.6, which rejects a layout prop it leaves out. Remove the override once
 a newer Nextra release supports it.
